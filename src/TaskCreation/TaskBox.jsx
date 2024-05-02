@@ -1,42 +1,26 @@
 import { useState } from 'react';
 import NewTask from '../CreateBar/NewTask';
 
-const TaskContainer = ({ trigger, setTask, task}) => {
+const TaskContainer = ({ trigger, setTask, task }) => {
   const [dropDown, setDropDown] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
-  const [editId,setEditId] = useState(null);
+  const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [editDate, setEditDate] = useState('');
-  const [editPriority, setEditPriority] = useState('');
+  const [editDay,setEditDay] = useState('')
   console.log(isEdit);
-
-  const handleEditDate = (editDate) => {
-    let spliting = editDate.split("/");
-    let updatedYear = spliting[2];
-    let updatedMonth = spliting[1];
-    let updatedDay = spliting[0];
-    let updatedDate = `${updatedYear}-${updatedMonth}-${updatedDay}`
-    console.log('UpdateDate',updatedDate)
-    return updatedDate
-  }
-
-  let editedDate = handleEditDate(editDate)
-
 
   const handleIsEdit = (id) => {
     setIsEdit(true);
-    setEditId(id)
+    setEditId(id);
     setEditName(task[id].name);
     setEditDescription(task[id].description);
-    setEditDate(task[id].date);
-    setEditPriority(task[id].priority);
+    setEditDay(task[id].day)
   };
-  
+
   const handleUpdateTask = (tasks) => {
-    console.log("Setting Edit Tassk")
     setTask(tasks);
-  }
+  };
 
   if (task) {
     const handleDeleteButton = (id) => {
@@ -54,7 +38,7 @@ const TaskContainer = ({ trigger, setTask, task}) => {
       const dropDownTask = [...task];
       dropDownTask[id].dropDown = dropDown;
     };
-     console.log("Takkkkkkkk",task)
+    console.log('Takkkkkkkk', task);
     return task.map((e, id) => {
       return (
         <div key={id}>
@@ -65,18 +49,15 @@ const TaskContainer = ({ trigger, setTask, task}) => {
             updateTrigger={{
               setEditName,
               setEditDescription,
-              setEditDate,
-              setEditPriority,
+              setEditDay,
               handleUpdateTask,
             }}
             task={task}
             details={{
               editName,
               editDescription,
-              editDate,
-              editPriority,
               editId,
-              editedDate,
+              editDay
             }}
           />
           <div
@@ -89,73 +70,17 @@ const TaskContainer = ({ trigger, setTask, task}) => {
               <p className="ml-2 basis-1/2 truncate p-1  border-l-[1px] border-l-zinc-300">
                 {e.name}
               </p>
-              {(() => {
-                if (e.priority === 'high') {
-                  return (
-                    <div
-                      className={`basis-2/12 p-1 flex overflow-hidden border-l-[1px] border-l-zinc-300 justify-center`}
-                    >
-                      <p className="w-[65px] bg-red-500 h-5 rounded-full text-white flex justify-center items-center">
-                        High
-                      </p>
-                    </div>
-                  );
-                } else if (e.priority === 'low') {
-                  return (
-                    <div
-                      className={`basis-2/12 p-1 flex overflow-hidden border-l-[1px] border-l-zinc-300 justify-center`}
-                    >
-                      <p className="w-[65px] bg-green-500 h-5 rounded-full text-white flex justify-center items-center">
-                        Low
-                      </p>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      className={`basis-2/12 p-1 flex overflow-hidden border-l-[1px] border-l-zinc-300 justify-center`}
-                    >
-                      <p className="w-[85px] bg-yellow-500 h-5 rounded-full text-white flex justify-center items-center">
-                        Moderate
-                      </p>
-                    </div>
-                  );
-                }
-              })()}
-              <div
-                className={`basis-2/12 p-1 overflow-hidden  border-l-[1px] border-l-zinc-300`}
-              >
-                <p className="truncate">User_Name</p>
-              </div>
 
               <div
                 className={`basis-2/12 p-1 overflow-hidden border-l-[1px] border-l-zinc-300 min-[0px]:max-xl:hidden xl:visible`}
               >
                 <p className="truncate">{e.createdDate}</p>
               </div>
-
+              
               <div
-                className={`basis-2/12 p-1 overflow-hidden border-l-[1px] border-l-zinc-300 ${
-                  e.date <= e.createdDate
-                    ? 'text-red-600 dark:text-red-500'
-                    : ''
-                }`}
+                className={`basis-2/12 p-1 overflow-hidden border-l-[1px] border-l-zinc-300 min-[0px]:max-xl:hidden xl:visible`}
               >
-                <p className="truncate">{e.date}</p>
-              </div>
-
-              <div
-                className={`basis-2/12 border-l-[1px] border-l-zinc-300 p-1 min-[0px]:max-xl:hidden xl:visible  ${
-                  e.remaining <= 0
-                    ? 'text-red-600 dark:text-red-500'
-                    : 'text-green-500'
-                }`}
-              >
-                <p className="truncate">
-                  {`${e.remaining >= 0 ? e.remaining : 'Unavailable'} ${
-                    e.remaining >= 0 && 'days'
-                  }`}
-                </p>
+                <p className="truncate">{e.day}</p>
               </div>
 
               {/* Edit buttons */}

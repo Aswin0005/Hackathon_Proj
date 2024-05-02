@@ -2,14 +2,10 @@ import { useState } from 'react';
 import React from 'react';
 
 const NewTask = (props) => {
-  console.log('Edutt', props.task);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [remaining, setRemaining] = useState('');
   const [createdDate, setCreatedDate] = useState('');
-  const [priority, setPriority] = useState('moderate');
+  const [day,setDay] = useState('')
 
   console.log('Edit', props.details);
   // Name change handling
@@ -17,7 +13,6 @@ const NewTask = (props) => {
     if (props.oper === 'Editing') {
       props.updateTrigger.setEditName(e.target.value);
     }
-    console.log(e.target.value);
     setName(e.target.value);
   };
 
@@ -30,80 +25,57 @@ const NewTask = (props) => {
     setDescription(e.target.value);
   };
 
-  //Date and time change handling
-  const handleDateChange = (e) => {
-    const date = e.target.value;
-    const year = date.split('-')[0];
-    const month = date.split('-')[1];
-    const day = date.split('-')[2];
-    setDate(`${day}/${month}/${year}`);
-    const inputDate = new Date(year, month - 1, day);
-    console.log('input', inputDate);
-    const today = new Date();
-    const createdDay = today.getDate();
-    const createdMonth = today.getMonth() + 1;
-    const createdYear = today.getFullYear();
-    setCreatedDate(`${createdDay}/${createdMonth}/${createdYear}`);
-    console.log('Today', today);
-    const remainingDays = Math.ceil(
-      (inputDate - today) / (24 * 60 * 60 * 1000)
-    );
-    console.log('remaining', remainingDays);
-    if (remainingDays <= 0) {
-      setRemaining(0);
-    } else {
-      setRemaining(remainingDays);
-    }
-  };
-
-  //Priority Change Handling
-  const handlePriority = (e) => {
-    if(props.oper === 'Editing'){
-    console.log('Priority inn2', priority);
-    props.updateTrigger.setEditPriority(e.target.value);
-    }
-    setPriority(e.target.value);
-  };
-
   const handleCancel = (e) => {
     if (props.oper === 'Editing') {
       props.setEditTrigger(false);
     } else {
       props.setTrigger(false);
     }
-  };
+  }
+
+const handleWeekDay = (e)  => {
+      if (props.oper === 'Editing') {
+        props.updateTrigger.setEditDay(e.target.value);
+      }
+      setDay(e.target.value);
+}
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('hjfbhjd', priority);
+
+    const today = new Date();
+    const createdDay = today.getDate();
+    const createdMonth = today.getMonth() + 1;
+    const createdYear = today.getFullYear();
+    setCreatedDate(`${createdDay}/${createdMonth}/${createdYear}`);
+
     if (props.oper === 'Editing') {
+      const today = new Date();
+      const createdDay = today.getDate();
+      const createdMonth = today.getMonth() + 1;
+      const createdYear = today.getFullYear();
+      setCreatedDate(`${createdDay}/${createdMonth}/${createdYear}`);
       let editTask = props.task.map((e, id) => {
         if (id === props.details.editId) {
           e.name = name || props.details.editName;
           e.description = description || props.details.editDescription;
-          e.priority = props.details.editPriority;
-          e.date = date;
-          e.remaining = remaining;
-          // e.createdDate = createdDate
+          e.day = day || props.details.editDay;
+   
           return e;
         } else {
           return e;
         }
       });
-      console.log('Esd', editTask);
       props.updateTrigger.handleUpdateTask(editTask);
       props.setEditTrigger(false);
     } else if (name) {
-      console.log('Submiting', name, description, date, time);
       props.setTask([
         ...props.task,
-        { name, description, date, time, remaining, createdDate, priority },
+        { name, description, createdDate ,day},
       ]);
       console.log('State after setTask', props.task);
       setName('');
       setDescription('');
-      setPriority('moderate');
-      setDate('');
-      setRemaining('');
+      setDay('')
       props.setTrigger(false);
     } else {
       alert('Cannot submit Empty Task');
@@ -118,7 +90,7 @@ const NewTask = (props) => {
           <div className="relative">
             <div className="fixed w-[475px] h-[400px] rounded bg-[#DBE2EF] dark:bg-[#393E46] p-4 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] shadow-sm shadow-[#EEEEEE] font-robotoCondensed">
               <label htmlFor="task-name" className="">
-                Name :{' '}
+                Meal Name :{' '}
               </label>
               <input
                 type="search"
@@ -144,8 +116,28 @@ const NewTask = (props) => {
                   autoComplete="off"
                 ></textarea>
 
+                {/* Weekdays */}
+                <div className="flex w-72 flex-col gap-6">
+                  <select
+                    className="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none "
+                    name="day"
+                    onChange={handleWeekDay}
+                    value={
+                      props.oper === 'Editing' ? props.details.editDay: day
+                    }
+                  >
+                    <option selected="">Open this select menu</option>
+                    <option value={'monday'}>Monday</option>
+                    <option value={'tuesday'}>Tuesday</option>
+                    <option value={'wednesday'}>Wednesday</option>
+                    <option value={'thursday'}>Thursday</option>
+                    <option value={'friday'}>Friday</option>
+                    <option value={'saturday'}>Saturay</option>
+                    <option value={'sunday'}>Sunday</option>
+                  </select>
+                </div>
                 {/* Date & time input */}
-                <label htmlFor="date-time" className="mt-2">
+                {/* <label htmlFor="date-time" className="mt-2">
                   Due Date :
                 </label>
                 <input
@@ -164,10 +156,10 @@ const NewTask = (props) => {
                   id="time"
                   onChange={(e) => setTime(e.target.value)}
                   className="mt-2 ml-2 p-1 dark:bg-[#393E46] border"
-                ></input>
+                ></input> */}
 
                 {/* Priority box */}
-                <div className="flex mt-4 gap-4">
+                {/* <div className="flex mt-4 gap-4">
                   <p>Priority : </p>
                   <div>
                     {' '}
@@ -246,7 +238,7 @@ const NewTask = (props) => {
                       Low
                     </label>
                   </div>
-                </div>
+                </div> */}
                 {/* Cancel & Create Button */}
                 <div className="absolute bottom-4 right-4">
                   <button
